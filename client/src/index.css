@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --cream: #faf8f4;
+  --cream2: #f3efe8;
+  --ink: #1c1917;
+  --ink2: #57534e;
+  --ink3: #a8a29e;
+  --terra: #c4622d;
+  --terra-light: #f5e6dc;
+  --border: #e7e2d9;
+  --green: #4a7c59;
+  --green-light: #e8f0eb;
+}
+
+[data-theme='dark'] {
+  --cream: #1a1614;
+  --cream2: #231e1b;
+  --ink: #f0ebe5;
+  --ink2: #b8afa8;
+  --ink3: #6b6460;
+  --terra-light: #3a1f10;
+  --border: #2e2822;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-cream text-ink antialiased min-h-screen;
+  }
+  h1,
+  h2,
+  h3,
+  .serif {
+    font-family: 'Playfair Display', serif;
+  }
+  body,
+  button,
+  input,
+  select,
+  textarea {
+    font-family: 'DM Sans', system-ui, sans-serif;
+  }
+}
