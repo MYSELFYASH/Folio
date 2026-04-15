@@ -112,6 +112,7 @@ export function Goals() {
   const [sessionsRecent, setSessionsRecent] = useState([]);
   const [readingBooks, setReadingBooks] = useState([]);
   const [editTarget, setEditTarget] = useState('');
+  const [newGoalTarget, setNewGoalTarget] = useState('12');
   const [logOpen, setLogOpen] = useState(false);
   const [pagesYear, setPagesYear] = useState(0);
 
@@ -144,7 +145,7 @@ export function Goals() {
 
   const yearGoal = useMemo(() => {
     const y = new Date().getFullYear();
-    return goals.find((g) => g.goal_type === 'books_per_year' && Number(g.year) === y && g.status === 'active') || goals[0];
+    return goals.find((g) => g.goal_type === 'books_per_year' && Number(g.year) === y) || goals[0];
   }, [goals]);
 
   useEffect(() => {
@@ -158,6 +159,9 @@ export function Goals() {
 
   const paceText = useMemo(() => {
     if (!yearGoal) return 'Set a yearly goal to see pacing.';
+    if (yearGoal.current_value >= yearGoal.target_value) {
+      return `Incredible work! You have successfully completed your reading goal for the year 🎉`;
+    }
     const month = new Date().getMonth() + 1;
     const pace = month ? (yearGoal.current_value / month) * 12 : 0;
     if (pace >= yearGoal.target_value) {
@@ -175,6 +179,21 @@ export function Goals() {
       load();
     } catch (e) {
       toast.error(e.response?.data?.error || 'Could not update');
+    }
+  }
+
+  async function createGoal(e) {
+    if (e) e.preventDefault();
+    try {
+      await goalsApi.create({
+        goal_type: 'books_per_year',
+        target_value: parseInt(newGoalTarget, 10),
+        year: new Date().getFullYear()
+      });
+      toast.success('Yearly goal created 🎉');
+      load();
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Could not create goal');
     }
   }
 
@@ -221,7 +240,26 @@ export function Goals() {
               </div>
             </>
           ) : (
-            <p className="text-ink2 text-center">No active yearly goal. Add one via the API or seed data.</p>
+            <div className="flex flex-col items-center justify-center py-6 text-center space-y-4">
+              <div className="p-4 rounded-full bg-terralt text-terra">
+                <Flame className="h-8 w-8" />
+              </div>
+              <div>
+                <h2 className="font-serif text-xl mb-1">Set a yearly reading goal</h2>
+                <p className="text-sm text-ink2">Track your progress and build a consistent reading habit.</p>
+              </div>
+              <form onSubmit={createGoal} className="flex gap-2 items-center mt-2">
+                <Input
+                  className="w-24 text-center"
+                  type="number"
+                  min={1}
+                  value={newGoalTarget}
+                  onChange={(e) => setNewGoalTarget(e.target.value)}
+                  required
+                />
+                <Button type="submit">Start tracking</Button>
+              </form>
+            </div>
           )}
         </Card>
 

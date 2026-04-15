@@ -91,8 +91,8 @@ export function Landing() {
         </div>
 
         <div className="relative z-10 my-16 max-w-xl transition-opacity duration-1000 ease-in-out">
-          <p className="font-serif text-4xl lg:text-5xl font-medium leading-[1.15] text-ink mb-8 before:content-['\201C'] before:text-terra/50 before:mr-2">
-            {currentQuote.text}
+          <p className="font-serif text-4xl lg:text-5xl font-medium leading-[1.15] text-ink mb-8">
+            <span className="text-terra/50 mr-2">{"\u201C"}</span>{currentQuote.text}
           </p>
           <div className="flex items-center gap-4">
             <div className="h-[1px] w-12 bg-terra/40"></div>

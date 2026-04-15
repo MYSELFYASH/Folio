@@ -8,7 +8,7 @@ import { authApi } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 
 export function Profile() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [preferredGenres, setPreferredGenres] = useState(user?.preferred_genres || '');
@@ -26,7 +26,7 @@ export function Profile() {
         payload.password = password;
       }
       const { data } = await authApi.updateProfile(payload);
-      // Ensure local user object gets updated if we handled user state synchronization
+      updateUser(data);
       toast.success('Profile updated successfully');
       setPassword('');
       setConfirmPassword('');

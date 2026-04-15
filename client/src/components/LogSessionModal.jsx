@@ -26,6 +26,7 @@ export function LogSessionModal({ open, onOpenChange, userBookId: initialUb, boo
   }, [open, initialUb, selectableBooks]);
 
   const showPicker = selectableBooks.length > 0 && initialUb == null;
+  const noBooksToLog = selectableBooks.length === 0 && initialUb == null;
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -91,6 +92,10 @@ export function LogSessionModal({ open, onOpenChange, userBookId: initialUb, boo
                 </SelectContent>
               </Select>
             </div>
+          ) : noBooksToLog ? (
+            <p className="text-sm text-red-500 font-medium bg-red-50 p-3 rounded-md border border-red-100">
+              No books currently marked as "Reading". Please start reading a book from your library first.
+            </p>
           ) : (
             <p className="text-sm text-ink2">
               Logging for <span className="font-medium text-ink">{bookTitle || 'selected book'}</span>
@@ -131,7 +136,7 @@ export function LogSessionModal({ open, onOpenChange, userBookId: initialUb, boo
             <Button type="button" variant="ghost" onClick={() => onOpenChange?.(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={submitting}>
+            <Button type="submit" disabled={submitting || noBooksToLog}>
               {submitting ? 'Saving…' : 'Save session'}
             </Button>
           </div>

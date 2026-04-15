@@ -7,8 +7,31 @@ router.use(authMiddleware);
 
 router.get('/', async (req, res) => {
   try {
+    const user_id = req.user.user_id;
+
+    // Dynamically sync 'books_per_year' goals with actual finished books in 'user_book'
+    // This catches updates from PATCH status changes, manual additions, and session logs.
+    const [goalsToSync] = await pool.query(
+      `SELECT goal_id, year, target_value, goal_type FROM goal WHERE user_id = ? AND goal_type = 'books_per_year'`,
+      [user_id]
+    );
+
+    for (const g of goalsToSync) {
+      const [c] = await pool.query(
+        `SELECT COUNT(*) AS n FROM user_book
+         WHERE user_id = ? AND status = 'finished' AND YEAR(finished_at) = ?`,
+        [user_id, g.year]
+      );
+      const computedValue = Number(c[0].n);
+      const newStatus = computedValue >= g.target_value ? 'completed' : 'active';
+      await pool.query(
+        `UPDATE goal SET current_value = ?, status = ? WHERE goal_id = ?`,
+        [computedValue, newStatus, g.goal_id]
+      );
+    }
+
     const [rows] = await pool.query(`SELECT * FROM goal WHERE user_id = ? ORDER BY year DESC, goal_id DESC`, [
-      req.user.user_id,
+      user_id,
     ]);
     res.json(rows);
   } catch (err) {
